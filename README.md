@@ -3,6 +3,10 @@
 A multi-source subtitle discovery, validation, repair and WebDAV synchronization
 pipeline for personal media libraries.
 
+多源字幕检索、验证、修复与 WebDAV 媒体库同步工具。
+
+**Status: Early Release (v0.1.0)**
+
 ## Overview
 
 `subsync` scans a WebDAV-hosted video library, detects canonical catalog numbers
@@ -15,16 +19,21 @@ any specific cloud provider: any WebDAV server works.
 
 ## Features
 
-- Recursive WebDAV inventory (PROPFIND) with video / subtitle / metadata classification
-- Catalog-number parsing with site-prefix stripping and zero-padding rules
-- Multi-source subtitle search (per-source adapters, isolated failures)
-- Conservative watermark filtering (audit trail; mixed cues are kept for review)
+- **Safe by default** — remote writes require `--execute`; existing subtitles are never overwritten
+- Multi-source subtitle discovery (per-source adapters, isolated failures)
+- Canonical media-number parsing (site-prefix stripping, zero-padding rules)
+- Simplified Chinese preference with Traditional → Simplified conversion (OpenCC `t2s`, timeline untouched)
+- Subtitle validation (pysubs2 parse, exact-number gate, error-page detection)
 - Broken-timeline repair with a strict invalid-ratio gate
-- Traditional → Simplified Chinese conversion (OpenCC `t2s`, timeline untouched)
-- Variant-group aware fan-out (normal + 4K copies each get their own sidecar)
-- Upload canaries: fresh PROPFIND protection, exact-filename check, GET roundtrip,
-  SHA256 equality, pysubs2 re-parse — per target
-- `sync_verified` is only ever set by a human after watching the video
+- Watermark-aware repair support (conservative phrase audit; mixed cues kept for review)
+- WebDAV storage backend (PROPFIND / GET / PUT, cross-platform)
+- Quality-variant handling (normal + 4K fan-out, each verified independently)
+- Duplicate-copy handling (historical copies, content_hash not claimed)
+- Edition safety guard (unapproved edition variants are never auto-uploaded)
+- Multipart safety guard (whole-movie subtitles are never auto-served to parts)
+- SHA256 remote roundtrip verification after every PUT
+- Manual playback verification (`sync_verified` is only set by a human)
+- Cross-platform: Windows / macOS / Linux
 
 ## Architecture
 
@@ -70,13 +79,13 @@ subsync doctor
 ## Quick Start
 
 ```bash
-subsync doctor                      # environment check (read-only)
-subsync scan --write                # inventory the library
-subsync search --number ABC-001     # discover subtitles for one number
-subsync produce --number ABC-001    # build final.zh-CN.srt locally
-subsync batch-upload --numbers ABC-001   # plan (dry run)
+subsync doctor                              # environment check (read-only)
+subsync scan --write                        # inventory the library
+subsync search --numbers ABC-001            # discover subtitles for one number
+subsync produce --numbers ABC-001           # build final.zh-CN.srt locally
+subsync batch-upload --numbers ABC-001      # plan (dry run — writes nothing)
 subsync batch-upload --numbers ABC-001 --execute   # verified upload
-subsync verify --number ABC-001     # after you checked it in your player
+subsync verify --number ABC-001             # after you checked it in your player
 ```
 
 ## Configuration
@@ -103,7 +112,6 @@ behaviors as defaults (curl-based GET, Basic auth, UTF-8 percent-encoded paths).
 | `verify` | human confirmation bookkeeping | never |
 | `approve-variant` | unlock an edition variant | never (records approval) |
 | `repair` | broken-timeline repair (local) | never |
-| `deep-search` | alias of `search` | never |
 
 ## Subtitle Sources
 
@@ -127,10 +135,18 @@ explicit `approve-variant`; multipart is never auto-served a whole-movie file.
 
 ## Safety
 
-- Never overwrites an existing subtitle (fresh PROPFIND before every write)
-- Every PUT is followed by PROPFIND + GET + SHA256 + re-parse
-- Uploads start as `UPLOADED_UNVERIFIED`; only you can set `sync_verified`
-- Write commands are dry-run by default (`--execute` required)
+Safe by default.
+
+- **Remote writes require `--execute`** — every write command plans first (dry run)
+- **Existing subtitles are never overwritten**, even with `--execute`
+- **Fresh PROPFIND before every PUT** against the target directory
+- **PUT → PROPFIND → GET → SHA256 verification** on every uploaded file
+- **Roundtrip verification ≠ playback sync verification** — bytes match is not timeline match
+- **Multi-version targets are verified independently** — normal and 4K copies each need their own human confirmation
+
+## License
+
+Released under the MIT License. See [LICENSE](LICENSE) for details.
 
 ## Privacy
 
