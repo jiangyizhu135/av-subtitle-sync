@@ -22,16 +22,17 @@ class SrtReport:
 
 
 def _decode(data: bytes) -> tuple[str, str]:
+    from subsync.utils import normalize_newlines
     if data.startswith(b"\xef\xbb\xbf"):
-        return data.decode("utf-8-sig"), "utf-8-sig"
+        return normalize_newlines(data.decode("utf-8-sig")), "utf-8-sig"
     try:
-        return data.decode("utf-8"), "utf-8"
+        return normalize_newlines(data.decode("utf-8")), "utf-8"
     except UnicodeDecodeError:
         pass
     try:
-        return data.decode("gbk"), "gbk"
+        return normalize_newlines(data.decode("gbk")), "gbk"
     except UnicodeDecodeError:
-        return data.decode("utf-8", errors="replace"), "utf-8(replace)"
+        return normalize_newlines(data.decode("utf-8", errors="replace")), "utf-8(replace)"
 
 
 def validate_srt(data: bytes) -> SrtReport:

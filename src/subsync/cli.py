@@ -239,6 +239,7 @@ def cmd_batch_upload(args) -> int:
 
     from subsync.inventory import subtitle_for
     from subsync.settings import get_settings
+    from subsync.utils import normalize_newlines
     from subsync.variants import classify_number_videos
 
     s = get_settings()
@@ -272,7 +273,8 @@ def cmd_batch_upload(args) -> int:
             continue
         data = final.read_bytes()
         try:
-            ssa = pysubs2.SSAFile.from_string(data.decode("utf-8-sig"), format_="srt")
+            ssa = pysubs2.SSAFile.from_string(
+                normalize_newlines(data.decode("utf-8-sig")), format_="srt")
         except Exception as e:
             preflight_fail.append(f"{number}: reopen 失败 {e}")
             continue
@@ -348,7 +350,8 @@ def cmd_batch_upload(args) -> int:
             raise BatchStop("SHA_MISMATCH",
                             f"{number} {sha_local[:12]} vs {sha_remote[:12]}")
         try:
-            rssa = pysubs2.SSAFile.from_string(got.decode("utf-8-sig"), format_="srt")
+            rssa = pysubs2.SSAFile.from_string(
+                normalize_newlines(got.decode("utf-8-sig")), format_="srt")
         except Exception as e:
             raise BatchStop("REMOTE_PARSE_ERROR", f"{number} {e}") from e
         rempty = sum(1 for e in rssa.events if e.plaintext.strip() == "")

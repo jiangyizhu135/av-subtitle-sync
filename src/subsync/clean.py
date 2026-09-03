@@ -30,7 +30,8 @@ def _ts(ms: int) -> str:
 
 
 def load_srt(data: bytes) -> pysubs2.SSAFile:
-    text = data.decode("utf-8-sig")
+    from subsync.utils import normalize_newlines
+    text = normalize_newlines(data.decode("utf-8-sig"))
     return pysubs2.SSAFile.from_string(text, format_="srt")
 
 

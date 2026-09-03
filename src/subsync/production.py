@@ -82,12 +82,13 @@ class ProduceResult:
 
 
 def _decode(data: bytes) -> str:
+    from subsync.utils import normalize_newlines
     if data.startswith(b"\xef\xbb\xbf"):
-        return data.decode("utf-8-sig")
+        return normalize_newlines(data.decode("utf-8-sig"))
     try:
-        return data.decode("utf-8")
+        return normalize_newlines(data.decode("utf-8"))
     except UnicodeDecodeError:
-        return data.decode("gbk", errors="replace")
+        return normalize_newlines(data.decode("gbk", errors="replace"))
 
 
 def looks_like_error_page(text: str) -> bool:

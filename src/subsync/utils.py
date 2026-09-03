@@ -23,3 +23,16 @@ def redact_secrets(text: str) -> str:
     t = _BEARER_RE.sub(lambda m: f"{m.group(1)} ***", t)
     t = _KEYVAL_RE.sub(lambda m: f"{m.group(1)}{m.group(2)}***", t)
     return t
+
+
+def normalize_newlines(text: str) -> str:
+    """Normalize CRLF / legacy CR to LF at SRT input boundaries.
+
+    Line endings are a serialization concern and must never leak into cue text:
+    CRLF (\r\n) is converted first, then any lone legacy CR (\r) to \n, so
+    LF / CRLF / CR inputs parse to identical cue semantics. Genuine multi-line
+    cue text (lines separated by \n) is preserved unchanged.
+    """
+    if not text:
+        return text
+    return text.replace("\r\n", "\n").replace("\r", "\n")

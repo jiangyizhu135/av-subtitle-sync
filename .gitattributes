@@ -1,0 +1,3 @@
+# Synthetic SRT fixtures must stay LF on every checkout (incl. Windows CI),
+# so fixture reads are deterministic across platforms.
+*.srt text eol=lf
