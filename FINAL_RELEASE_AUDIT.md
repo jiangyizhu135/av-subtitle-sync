@@ -11,14 +11,14 @@ Status: Early Release
 # Privacy
 
 Credentials: 0（仅 .env.example 空值 / your_password 占位 / redact 正则描述）
-Private usernames: 0（jiangyizhu 无命中——仅 PHASE2 审计文档自述 "0" 一词）
-Private paths: 0（/Users/ 无命中）
+Private usernames: 0（无真实用户名命中）
+Private paths: 0（无真实用户目录命中）
 Real media inventory: 0（data/ 未复制）
 Real subtitles: 0（仅 tests/fixtures 4 个自编 synthetic .srt）
 Real runtime manifests: 0（无 data/manifest）
-Real AV examples: 0（MIDA/SONE/SNOS/SIVR/OAE/CAWB/MIDE/SOAN/HMN 全 grep 0 命中）
-Real host tags: 0（489155/98T/98堂/hhd800/masex 0 命中）
-Private 目录名: 0（片/濑户环奈 0 命中）
+Real AV examples: 0（无私人库真实番号命中）
+Real host tags: 0（无真实水印站/来源域名命中）
+Private 目录名: 0（无私人媒体目录名命中）
 
 # Git
 

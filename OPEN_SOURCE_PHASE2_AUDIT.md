@@ -11,14 +11,14 @@ Public history independent: **YES**（git init 全新，0 个 private commit/blo
 ## Privacy
 
 Real credentials: **0**（.env 未复制；config.example/.env.example 全 placeholder）
-Private usernames: **0**（grep jiangyizhu 无命中）
-Private absolute paths: **0**（grep /Users/ 无命中）
+Private usernames: **0**
+Private absolute paths: **0**
 Real media inventory: **0**（data/ 目录未复制）
 Real subtitle files: **0**（仅 tests/fixtures 4 个 synthetic .srt；真实 .srt 全部 gitignore 屏蔽）
 Real runtime manifests: **0**（data/manifest 未复制）
 
-真实番号残留: **0**（MIDA/SONE/SNOS/SIVR/OAE/CAWB/MGOLD/MNGS/MIDE/HMN/DSOD/VDD/YUJ/SOAN/SPJUR/FWAY/GBRK/RMSQ/MFYD 全部 grep 无命中）
-真实水印站残留: **0**（489155/98T.la/98堂/hhd800/masex.tv 全部 grep 无命中）
+真实番号残留: **0**
+真实水印站残留: **0**
 
 ## Packaging
 
