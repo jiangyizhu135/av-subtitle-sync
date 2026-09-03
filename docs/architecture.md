@@ -48,5 +48,6 @@ number do not automatically share a subtitle unless the group model says so.
 | `deep_search.py` | multi-source discovery driver |
 | `production.py` | download → validate → clean → final |
 | `repair.py` | broken-timeline repair |
+| `nfo.py` | offline `.nfo` XML assembly + stable title policy |
 | `srt.py` / `clean.py` | SRT parsing, validation, empty-cue cleaning |
 | `cli.py` | command surface |

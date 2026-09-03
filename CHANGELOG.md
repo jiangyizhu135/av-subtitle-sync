@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.0] - 2026-09-03
+
+### Added
+
+- NFO generation (`subsync nfo`): Kodi/Jellyfin/VidHub-compatible `.nfo`
+  sidecar assembled locally and offline from a metadata JSON
+- Stable title policy: `<title>` = NUMBER + display title (Simplified Chinese
+  preferred), `<originaltitle>` = original title, `<sorttitle>` = NUMBER,
+  with duplicate-number prefix stripping
+- Optional plot, resolved-title and actress-thumb inputs; missing metadata is
+  omitted, never invented
+- Output verification (XML re-parse + root check) and no-overwrite default
+  (`--force` to override); the command never touches the remote library
+- Offline test coverage for the builder and the CLI
+
 ## [0.1.0] - 2026-09-03
 
 ### Added

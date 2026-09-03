@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "av-subtitle-sync"
-version = "0.1.0"
-description = "Multi-source subtitle discovery, validation, repair and WebDAV sync pipeline."
+version = "0.2.0"
+description = "Multi-source subtitle discovery, validation, repair, WebDAV sync pipeline with offline NFO sidecar generation."
 requires-python = ">=3.11"
 license = {text = "MIT"}
-keywords = ["subtitle", "subtitles", "webdav", "media-library", "opencc", "cross-platform"]
+keywords = ["subtitle", "subtitles", "webdav", "media-library", "opencc", "nfo", "kodi", "jellyfin", "cross-platform"]
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",

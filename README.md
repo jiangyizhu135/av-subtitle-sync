@@ -1,9 +1,10 @@
 # AV Subtitle Sync
 
-A multi-source subtitle discovery, validation, repair and WebDAV synchronization
-pipeline for personal media libraries.
+A multi-source subtitle discovery, validation, repair and WebDAV
+synchronization pipeline for personal media libraries, with offline NFO
+sidecar generation.
 
-多源字幕检索、验证、修复与 WebDAV 媒体库同步工具。
+多源字幕检索、验证、修复与 WebDAV 媒体库同步工具，附离线 NFO sidecar 生成。
 
 **Status: Early Release (v0.1.0)**
 
@@ -32,6 +33,7 @@ any specific cloud provider: any WebDAV server works.
 - Edition safety guard (unapproved edition variants are never auto-uploaded)
 - Multipart safety guard (whole-movie subtitles are never auto-served to parts)
 - SHA256 remote roundtrip verification after every PUT
+- NFO generation: Kodi/Jellyfin/VidHub-compatible `.nfo` built locally and offline from your metadata (`subsync nfo`)
 - Manual playback verification (`sync_verified` is only set by a human)
 - Cross-platform: Windows / macOS / Linux
 
@@ -112,6 +114,7 @@ behaviors as defaults (curl-based GET, Basic auth, UTF-8 percent-encoded paths).
 | `verify` | human confirmation bookkeeping | never |
 | `approve-variant` | unlock an edition variant | never (records approval) |
 | `repair` | broken-timeline repair (local) | never |
+| `nfo` | build a `.nfo` sidecar locally from metadata JSON | never |
 
 ## Subtitle Sources
 
@@ -132,6 +135,15 @@ Numbers with multiple videos are classified into SINGLE / QUALITY_VARIANT /
 DUPLICATE_COPY / EDITION_VARIANT / MULTIPART / AMBIGUOUS. Subtitles fan out
 only to quality variants and duplicate copies; edition variants require an
 explicit `approve-variant`; multipart is never auto-served a whole-movie file.
+
+## NFO Generation
+
+`subsync nfo` assembles a Kodi/Jellyfin/VidHub-compatible `.nfo` sidecar from
+a metadata JSON you provide — fully offline, with a stable title policy
+(`<title>` = NUMBER + display title, `<originaltitle>` = original title,
+`<sorttitle>` = NUMBER). Output is XML-verified before writing and existing
+files are never overwritten without `--force`. The command never touches the
+remote library. See [docs/nfo.md](docs/nfo.md).
 
 ## Safety
 

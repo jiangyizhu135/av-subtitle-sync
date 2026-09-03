@@ -9,6 +9,7 @@ Commands:
   verify          mark manually confirmed targets as sync_verified
   approve-variant approve an edition variant to reuse the standard subtitle
   repair          repair broken-timeline subtitles locally
+  nfo             build a Kodi/Jellyfin-compatible .nfo locally (offline)
 
 Write commands never run by default, and never overwrite existing subtitles.
 """
@@ -19,6 +20,7 @@ import hashlib
 import json
 import sys
 import time
+from pathlib import Path
 from typing import NoReturn
 
 from subsync import __version__
@@ -600,6 +602,90 @@ def cmd_repair(args) -> int:
     return 0
 
 
+# ================================================================ nfo
+def cmd_nfo(args) -> int:
+    """本地生成 .nfo sidecar（纯离线组装；零网络、零远端写）。
+
+    输入是调用方准备好的 metadata JSON（schema 见 docs/nfo.md）；
+    输出前重新解析校验 XML；已存在文件不覆盖（--force 才允许）。
+    """
+    import xml.etree.ElementTree as ET
+
+    from subsync.nfo import build_nfo_bytes
+    from subsync.settings import get_settings
+
+    meta_path = Path(args.meta)
+    if not meta_path.is_file():
+        print(f"META_NOT_FOUND: {meta_path}")
+        return 1
+    try:
+        meta = json.loads(meta_path.read_text(encoding="utf-8"))
+    except Exception as e:
+        print(f"META_PARSE_ERROR: {e}")
+        return 1
+    if not isinstance(meta, dict):
+        print("META_PARSE_ERROR: metadata JSON 顶层必须是对象")
+        return 1
+
+    num = (args.number or meta.get("number") or "").strip().upper()
+    if not num:
+        print("NFO_NUMBER_MISSING: 用 --number 指定，或在 metadata JSON 中提供 number")
+        return 1
+
+    plot = None
+    if args.plot:
+        plot_path = Path(args.plot)
+        if not plot_path.is_file():
+            print(f"PLOT_NOT_FOUND: {plot_path}")
+            return 1
+        plot = plot_path.read_text(encoding="utf-8").strip() or None
+
+    title_info = None
+    if args.title_info:
+        ti_path = Path(args.title_info)
+        if not ti_path.is_file():
+            print(f"TITLE_INFO_NOT_FOUND: {ti_path}")
+            return 1
+        title_info = json.loads(ti_path.read_text(encoding="utf-8"))
+
+    thumb_map = None
+    if args.thumb_map:
+        tm_path = Path(args.thumb_map)
+        if not tm_path.is_file():
+            print(f"THUMB_MAP_NOT_FOUND: {tm_path}")
+            return 1
+        thumb_map = {str(k): str(v) for k, v in
+                     json.loads(tm_path.read_text(encoding="utf-8")).items()}
+
+    data = build_nfo_bytes(num, meta, plot,
+                           thumb_map=thumb_map,
+                           title_info=title_info)
+    # 写前校验：重新解析 + 根元素必须是 <movie>
+    try:
+        root = ET.fromstring(data)
+    except Exception as e:
+        print(f"NFO_XML_INVALID: {e}")
+        return 1
+    if root.tag != "movie":
+        print(f"NFO_XML_INVALID: root=< {root.tag} >")
+        return 1
+
+    if args.stdout:
+        print(data.decode("utf-8"))
+        return 0
+
+    s = get_settings()
+    out = Path(args.out) if args.out else s.data_dir / "nfo" / f"{num}.nfo"
+    if out.exists() and not args.force:
+        print(f"NFO_EXISTS: {out} 已存在（--force 才允许覆盖）")
+        return 1
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_bytes(data)
+    print(f"NFO_WRITTEN: {out} ({len(data)} bytes)")
+    print("本地生成完成（零远端写；上传另行处理）")
+    return 0
+
+
 # ================================================================ main
 def build_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(
@@ -650,6 +736,19 @@ def build_parser() -> argparse.ArgumentParser:
     p_rep = sub.add_parser("repair", help="坏时间轴字幕本地修复")
     p_rep.add_argument("--numbers", required=True)
     p_rep.set_defaults(func=cmd_repair)
+
+    p_nfo = sub.add_parser("nfo", help="本地生成 .nfo（纯离线组装；零远端写）")
+    p_nfo.add_argument("--meta", required=True, help="metadata JSON 路径（schema 见 docs/nfo.md）")
+    p_nfo.add_argument("--number", default=None, help="番号；缺省取 metadata JSON 的 number 字段")
+    p_nfo.add_argument("--plot", default=None, help="剧情简介文本文件（可选；绝不编造剧情）")
+    p_nfo.add_argument("--title-info", default=None,
+                       help="标题解析 JSON（display_title 字段优先；可选）")
+    p_nfo.add_argument("--thumb-map", default=None,
+                       help="演员名→thumb URL 的 JSON 对象文件（可选）")
+    p_nfo.add_argument("--out", default=None, help="输出路径（默认 data/nfo/<NUMBER>.nfo）")
+    p_nfo.add_argument("--force", action="store_true", help="允许覆盖已存在的输出文件")
+    p_nfo.add_argument("--stdout", action="store_true", help="只打印 XML，不写文件")
+    p_nfo.set_defaults(func=cmd_nfo)
     return ap
 
 
