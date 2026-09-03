@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "av-subtitle-sync"
+version = "0.1.0"
+description = "A multi-source subtitle discovery, validation, repair and WebDAV synchronization pipeline."
+requires-python = ">=3.11"
+dependencies = [
+    "requests",
+    "lxml",
+    "pysubs2",
+    "opencc-python-reimplemented",
+    "python-dotenv",
+]
+
+[project.optional-dependencies]
+test = ["pytest", "ruff"]
+
+[project.scripts]
+subsync = "subsync.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "RUF"]
+ignore = ["BLE001", "E501", "RUF001", "RUF002", "RUF003"]  # 盲捕 Exception=来源隔离；全角标点=中文文档正常用法

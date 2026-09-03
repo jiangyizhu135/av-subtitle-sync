@@ -1,0 +1,37 @@
+# secrets
+.env
+.env.*
+!.env.example
+
+# local config
+config.toml
+
+# python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# runtime data (never publish)
+data/
+runtime/
+cache/
+logs/
+output/
+*.log
+
+# subtitles: never publish real ones (synthetic fixtures are allowed)
+*.srt
+*.ass
+*.ssa
+!tests/fixtures/**/*.srt

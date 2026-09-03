@@ -1,0 +1,10 @@
+[
+  {"path": "/Movies/ABC-001/ABC-001.mp4", "size": 1234567890},
+  {"path": "/Movies/ABC-002/ABC-002.mp4", "size": 2234567890},
+  {"path": "/Movies/ABC-002/ABC-002_4K.mp4", "size": 4234567890},
+  {"path": "/Movies/ABC-003/ABC-003-C.mp4", "size": 1534567890},
+  {"path": "/Movies/ABC-004/ABC-004.part1.mp4", "size": 3234567890},
+  {"path": "/Movies/ABC-004/ABC-004.part2.mp4", "size": 3134567890},
+  {"path": "/Movies/XYZ-009/XYZ-009.mp4", "size": 1134567890},
+  {"path": "/Movies/XYZ-009/XYZ-009.mp4", "size": 1134567890}
+]

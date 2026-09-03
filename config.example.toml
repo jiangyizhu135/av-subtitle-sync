@@ -1,0 +1,14 @@
+[storage]
+backend = "webdav"
+url = "http://127.0.0.1:8080/dav"
+root = "/"
+
+[subtitle]
+preferred_languages = ["zh-CN", "zh-TW"]
+
+[network]
+timeout = 30
+retries = 3
+
+[paths]
+data_dir = "./data"
